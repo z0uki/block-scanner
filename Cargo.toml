@@ -1,0 +1,13 @@
+[package]
+name = "block-scanner"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+anyhow = "1.0"
+tokio = { version = "1.18", features = ["full"] }
+futures = "0.3"
+ethers = { version = "2.0.7", features = ["ws", "rustls"] }
+ethers-core = "2.0.7"
