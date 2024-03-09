@@ -15,7 +15,7 @@ async fn main() -> Result<()> {
     //连接https rpc
     let client = Arc::new(Provider::<Http>::connect("http://localhost:8545").await);
 
-    let from_block = 19380000_u64;
+    let from_block = 19387666_u64;
 
     let leatest_block = client.get_block_number().await?.as_u64();
 
@@ -24,6 +24,9 @@ async fn main() -> Result<()> {
     let weth = H160::from_str("0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2").unwrap();
     let transfer_topic: H256 = AbiDecode::decode_hex(
         "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+    )?;
+    let deposit_topic: H256 = AbiDecode::decode_hex(
+        "0xe1fffcc4923d04b559f4d29a8bfc6cda04eb5b0d3c460751c2402c5c5cc9109c",
     )?;
     for i in from_block..leatest_block {
         let semaphore = semaphore.clone();
@@ -36,20 +39,18 @@ async fn main() -> Result<()> {
                 if let Ok(Some(receipt)) = client.get_transaction_receipt(tx.hash).await {
                     receipt.logs.iter().for_each(|log| {
                         if log.address == weth
-                            && log.topics.len() == 3
-                            && log.topics[0] == transfer_topic
+                            && log.topics.len() == 2
+                            && log.topics[0] == deposit_topic
                         {
                             let amount = U256::from_big_endian(log.data.to_vec().as_slice());
-                            let from = fmt_address(H160::from_slice(&log.topics[1][12..]));
-                            let to = fmt_address(H160::from_slice(&log.topics[2][12..]));
+                            let dst = fmt_address(H160::from_slice(&log.topics[1][12..]));
                             if amount > parse_ether(27.04).unwrap()
-                                && amount < parse_ether(27.1).unwrap()
+                                && amount < parse_ether(27.05).unwrap()
                             {
                                 println!(
-                                    "tx: {} from: {}, to: {}, amount: {}",
+                                    "tx: {} to: {}, amount: {}",
                                     tx.hash().encode_hex(),
-                                    from,
-                                    to,
+                                    dst,
                                     format_ether(amount)
                                 );
                             }
