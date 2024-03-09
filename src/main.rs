@@ -15,7 +15,7 @@ async fn main() -> Result<()> {
     //连接https rpc
     let client = Arc::new(Provider::<Http>::connect("http://localhost:8545").await);
 
-    let from_block = 19387666_u64;
+    let from_block = 19387000_u64;
 
     let leatest_block = client.get_block_number().await?.as_u64();
 
@@ -39,6 +39,24 @@ async fn main() -> Result<()> {
                 if let Ok(Some(receipt)) = client.get_transaction_receipt(tx.hash).await {
                     receipt.logs.iter().for_each(|log| {
                         if log.address == weth
+                            && log.topics.len() == 3
+                            && log.topics[0] == transfer_topic
+                        {
+                            let amount = U256::from_big_endian(log.data.to_vec().as_slice());
+                            let from = fmt_address(H160::from_slice(&log.topics[1][12..]));
+                            let to = fmt_address(H160::from_slice(&log.topics[2][12..]));
+                            if amount > parse_ether(27.04).unwrap()
+                                && amount < parse_ether(27.1).unwrap()
+                            {
+                                println!(
+                                    "tx: {} from: {}, to: {}, amount: {}",
+                                    tx.hash().encode_hex(),
+                                    from,
+                                    to,
+                                    format_ether(amount)
+                                );
+                            }
+                        } else if log.address == weth
                             && log.topics.len() == 2
                             && log.topics[0] == deposit_topic
                         {
