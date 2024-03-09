@@ -42,13 +42,7 @@ async fn main() -> Result<()> {
                             let amount = U256::from_big_endian(log.data.to_vec().as_slice());
                             let from = log.topics[1].as_bytes().encode_hex();
                             let to = log.topics[2].as_bytes().encode_hex();
-                            println!(
-                                "tx: {} from: {}, to: {}, amount: {}",
-                                tx.hash.encode_hex(),
-                                from,
-                                to,
-                                amount
-                            );
+
                             if amount > parse_ether(27.04).unwrap()
                                 && amount < parse_ether(27.05).unwrap()
                             {
