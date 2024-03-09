@@ -32,9 +32,11 @@ async fn main() -> Result<()> {
                 if let Ok(Some(receipt)) = client.get_transaction_receipt(tx.hash).await {
                     receipt.logs.iter().for_each(|log| {
                         if log.address == weth && log.topics.len() == 3 && log.topics[0].as_bytes().encode_hex() == "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef" {
+
                             let amount = U256::from_big_endian(log.data.to_vec().as_slice());
                             let from = log.topics[1].as_bytes().encode_hex();
                             let to = log.topics[2].as_bytes().encode_hex();
+                            println!("tx: {} from: {}, to: {}, amount: {}", tx.hash.encode_hex(),from, to, amount);
                             if amount > parse_ether(27.04).unwrap() && amount < parse_ether(27.05).unwrap() {
                                 println!("tx: {} from: {}, to: {}, amount: {}", tx.hash().encode_hex(),from, to, amount);
                             }
