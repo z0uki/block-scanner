@@ -4,8 +4,9 @@ use anyhow::Result;
 use ethers::{
     providers::{Http, Middleware, Provider, ProviderExt},
     types::Address,
-    utils::{hex::ToHex, parse_ether},
+    utils::{hex::ToHexExt, parse_ether},
 };
+use ethers_core::abi::AbiEncode;
 use tokio::sync::Semaphore;
 
 #[tokio::main]
@@ -31,7 +32,7 @@ async fn main() -> Result<()> {
             let txs = block.unwrap_or_default().transactions;
             for tx in txs {
                 if tx.value == value {
-                    println!("tx: {}", tx.hash().to_string());
+                    println!("tx: {}", tx.hash.encode_hex());
                 }
             }
         }));
@@ -43,5 +44,5 @@ async fn main() -> Result<()> {
 }
 
 pub fn fmt_address(address: Address) -> String {
-    format!("0x{}", address.as_bytes().encode_hex::<String>())
+    format!("0x{}", address.as_bytes().encode_hex())
 }
