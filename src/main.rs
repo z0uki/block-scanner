@@ -14,7 +14,7 @@ async fn main() -> Result<()> {
     //连接https rpc
     let client = Arc::new(Provider::<Http>::connect("http://localhost:8545").await);
 
-    let from_block = 19390000_u64;
+    let from_block = 19380000_u64;
 
     let leatest_block = client.get_block_number().await?.as_u64();
 
@@ -35,7 +35,7 @@ async fn main() -> Result<()> {
                             let amount = U256::from_big_endian(log.data.to_vec().as_slice());
                             let from = log.topics[1].as_bytes().encode_hex();
                             let to = log.topics[2].as_bytes().encode_hex();
-                            if amount > parse_ether(25.07).unwrap() && amount < parse_ether(25.08).unwrap() {
+                            if amount > parse_ether(27.04).unwrap() && amount < parse_ether(27.05).unwrap() {
                                 println!("tx: {} from: {}, to: {}, amount: {}", tx.hash().encode_hex(),from, to, amount);
                             }
                         }
