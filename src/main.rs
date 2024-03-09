@@ -21,6 +21,9 @@ async fn main() -> Result<()> {
     let semaphore = Arc::new(Semaphore::new(100));
     let mut tasks = Vec::new();
     let weth = H160::from_str("0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2").unwrap();
+    let transfer_topic: H256 = AbiDecode::decode_hex(
+        "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+    )?;
     for i in from_block..leatest_block {
         let semaphore = semaphore.clone();
         let client = client.clone();
@@ -31,14 +34,30 @@ async fn main() -> Result<()> {
             for tx in txs {
                 if let Ok(Some(receipt)) = client.get_transaction_receipt(tx.hash).await {
                     receipt.logs.iter().for_each(|log| {
-                        if log.address == weth && log.topics.len() == 3 && log.topics[0].as_bytes().encode_hex() == "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef" {
-
+                        if log.address == weth
+                            && log.topics.len() == 3
+                            && log.topics[0] == transfer_topic
+                        {
                             let amount = U256::from_big_endian(log.data.to_vec().as_slice());
                             let from = log.topics[1].as_bytes().encode_hex();
                             let to = log.topics[2].as_bytes().encode_hex();
-                            println!("tx: {} from: {}, to: {}, amount: {}", tx.hash.encode_hex(),from, to, amount);
-                            if amount > parse_ether(27.04).unwrap() && amount < parse_ether(27.05).unwrap() {
-                                println!("tx: {} from: {}, to: {}, amount: {}", tx.hash().encode_hex(),from, to, amount);
+                            println!(
+                                "tx: {} from: {}, to: {}, amount: {}",
+                                tx.hash.encode_hex(),
+                                from,
+                                to,
+                                amount
+                            );
+                            if amount > parse_ether(27.04).unwrap()
+                                && amount < parse_ether(27.05).unwrap()
+                            {
+                                println!(
+                                    "tx: {} from: {}, to: {}, amount: {}",
+                                    tx.hash().encode_hex(),
+                                    from,
+                                    to,
+                                    amount
+                                );
                             }
                         }
                     });
