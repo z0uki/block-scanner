@@ -5,7 +5,7 @@ use ethers::{
     abi::AbiDecode,
     providers::{Http, Middleware, Provider, ProviderExt},
     types::{Address, H160, H256, U256},
-    utils::{hex::ToHexExt, parse_ether},
+    utils::{format_ether, hex::ToHexExt, parse_ether},
 };
 use ethers_core::abi::AbiEncode;
 use tokio::sync::Semaphore;
@@ -43,14 +43,14 @@ async fn main() -> Result<()> {
                             let from = fmt_address(H160::from_slice(&log.topics[1][12..]));
                             let to = fmt_address(H160::from_slice(&log.topics[2][12..]));
                             if amount > parse_ether(27.04).unwrap()
-                                && amount < parse_ether(27.05).unwrap()
+                                && amount < parse_ether(27.1).unwrap()
                             {
                                 println!(
                                     "tx: {} from: {}, to: {}, amount: {}",
                                     tx.hash().encode_hex(),
                                     from,
                                     to,
-                                    amount
+                                    format_ether(amount)
                                 );
                             }
                         }
