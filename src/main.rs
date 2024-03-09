@@ -14,7 +14,7 @@ async fn main() -> Result<()> {
     //连接https rpc
     let client = Arc::new(Provider::<Http>::connect("http://localhost:8545").await);
 
-    let from_block = 19394000_u64;
+    let from_block = 19390000_u64;
 
     let leatest_block = client.get_block_number().await?.as_u64();
 
