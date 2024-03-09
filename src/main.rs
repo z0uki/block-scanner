@@ -2,8 +2,9 @@ use std::{str::FromStr, sync::Arc};
 
 use anyhow::Result;
 use ethers::{
+    abi::AbiDecode,
     providers::{Http, Middleware, Provider, ProviderExt},
-    types::{Address, H160, U256},
+    types::{Address, H160, H256, U256},
     utils::{hex::ToHexExt, parse_ether},
 };
 use ethers_core::abi::AbiEncode;
